@@ -45,6 +45,10 @@ app.get('/', (req, res) => {
 //   });
 // });
 
+//
+//
+// REGISTER**************************************
+
 app.post(
   '/auth/signup',
   registerValidation,
@@ -72,7 +76,7 @@ app.post(
 
       const token = jwt.sign(
         {
-          _id: user.id,
+          _id: user._id,
         },
         'whateverYouWant',
         {
@@ -91,7 +95,48 @@ app.post(
     }
   }
 );
-// app.post('/auth/signup', (req, res) => {});
+
+//
+//
+// LOGIN*******************************
+
+app.post('/auth/signin', async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'The user was not found',
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      req.body.passwordHash,
+      user._doc.passwordHash
+    );
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: 'Invalid login or password',
+      });
+    }
+
+    const token = jwt.sign({ _id: user._id }, 'whateverYouWant', {
+      expiresIn: '30d',
+    });
+
+    const { passwordHash, ...userData } = user._doc;
+    res.json({
+      ...userData,
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Authorization failed',
+    });
+  }
+});
 
 app.listen(2999, (err) => {
   if (err) {
