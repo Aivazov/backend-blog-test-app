@@ -5,7 +5,7 @@
 // const { validationResult } = require('express-validator');
 
 import express from 'express';
-// import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { registerValidation } from './validations/auth.js';
 import { validationResult } from 'express-validator';
@@ -50,26 +50,45 @@ app.post(
   registerValidation,
   // () => registerValidation,
   async (req, res) => {
-    const errors = validationResult(req);
+    try {
+      const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json(errors.array());
+      if (!errors.isEmpty()) {
+        return res.status(400).json(errors.array());
+      }
+
+      const password = req.body.passwordHash;
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(password, salt);
+
+      const doc = new UserModel({
+        email: req.body.email,
+        fullName: req.body.fullName,
+        passwordHash: hash,
+        avatarUrl: req.body.avatarUrl,
+      });
+
+      const user = await doc.save();
+
+      const token = jwt.sign(
+        {
+          _id: user.id,
+        },
+        'whateverYouWant',
+        {
+          expiresIn: '30d',
+        }
+      );
+
+      const { passwordHash, ...userData } = user._doc;
+
+      res.json({ ...userData, token });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: 'Registration failure',
+      });
     }
-
-    const password = req.body.passwordHash;
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
-    const doc = new UserModel({
-      email: req.body.email,
-      fullName: req.body.fullName,
-      passwordHash: hash,
-      avatarUrl: req.body.avatarUrl,
-    });
-
-    const user = await doc.save();
-
-    res.json(user);
   }
 );
 // app.post('/auth/signup', (req, res) => {});
