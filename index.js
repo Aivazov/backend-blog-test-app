@@ -11,6 +11,7 @@ import { registerValidation } from './validations/auth.js';
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import UserModel from './models/User.js';
+import checkAuth from './utils/checkAuth.js';
 
 mongoose
   .connect(
@@ -136,6 +137,28 @@ app.post('/auth/signin', async (req, res) => {
       message: 'Authorization failed',
     });
   }
+});
+
+//
+//
+//  USERINFO ***********************************
+app.get('/auth/user', checkAuth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    const token = req.token;
+
+    if (!user) {
+      res.status(404).json({
+        message: 'User not found',
+      });
+    }
+
+    const { passwordHash, ...userData } = user._doc;
+    res.json({
+      userData,
+      token,
+    });
+  } catch (error) {}
 });
 
 app.listen(2999, (err) => {
