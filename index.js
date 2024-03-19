@@ -1,7 +1,13 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-const { reqisterValidation } = require('./validations/auth');
+// const express = require('express');
+// const jwt = require('jsonwebtoken');
+// const mongoose = require('mongoose');
+// const registerValidation = require('./validations/auth');
+// const { validationResult } = require('express-validator');
+import express from 'express';
+// import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import { registerValidation } from './validations/auth.js';
+import { validationResult } from 'express-validator';
 
 mongoose
   .connect(
@@ -36,8 +42,23 @@ app.get('/', (req, res) => {
 //   });
 // });
 
-// app.post('/auth/signup', reqisterValidation, (req, res) => {});
-app.post('/auth/signup', (req, res) => {});
+app.post(
+  '/auth/signup',
+  registerValidation,
+  // () => registerValidation,
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json(errors.array());
+    }
+
+    res.json({
+      success: true,
+    });
+  }
+);
+// app.post('/auth/signup', (req, res) => {});
 
 app.listen(2999, (err) => {
   if (err) {
