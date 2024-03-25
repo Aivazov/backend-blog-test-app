@@ -6,7 +6,7 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
-import { registerValidation } from './validations/auth.js';
+import { loginValidation, registerValidation } from './validations/auth.js';
 import checkAuth from './utils/checkAuth.js';
 import { signup, signin, userInfo } from './controllers/UserController.js';
 
@@ -51,7 +51,7 @@ app.post('/auth/signup', registerValidation, signup);
 
 // LOGIN*******************************
 
-app.post('/auth/signin', signin);
+app.post('/auth/signin', loginValidation, signin);
 
 //  USERINFO ***********************************
 

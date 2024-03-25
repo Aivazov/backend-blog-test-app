@@ -10,6 +10,13 @@ export const registerValidation = [
   body('avatarUrl', 'uncorrect URL').optional().isURL(),
 ];
 
+export const loginValidation = [
+  body('email', 'Please enter correct email').isEmail(),
+  body('passwordHash', 'password has to be minimum 5 symbols').isLength({
+    min: 5,
+  }),
+];
+
 // module.exports = registerValidation;
 
 //body('param1 validation var', 'param2 is message')
