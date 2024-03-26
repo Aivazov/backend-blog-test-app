@@ -12,6 +12,25 @@ export const getAll = async (req, res) => {
   }
 };
 
+export const getOne = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    PostModel.findOneAndUpdate(
+      {
+        _id: postId,
+      },
+      { $inc: { viewsCount: 1 } }, //$inc is mongoDB method to increment determined field
+      { returnDocument: 'after' } //returning updated doc after all the manipulations
+    );
+    res.json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Failed to show post',
+    });
+  }
+};
+
 export const createPost = async (req, res) => {
   try {
     const doc = new PostModel({
