@@ -1,5 +1,17 @@
 import PostModel from '../models/Post.js';
 
+export const getAll = async (req, res) => {
+  try {
+    const posts = await PostModel.find().populate('author').exec();
+    res.json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Failed to show posts',
+    });
+  }
+};
+
 export const createPost = async (req, res) => {
   try {
     const doc = new PostModel({

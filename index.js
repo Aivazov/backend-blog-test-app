@@ -7,8 +7,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import { loginValidation, registerValidation } from './validations/auth.js';
+import { postCreationValidation } from './validations/post.js';
 import checkAuth from './utils/checkAuth.js';
 import { signup, signin, userInfo } from './controllers/UserController.js';
+import { getAll, createPost } from './controllers/PostController.js';
 
 mongoose
   .connect(
@@ -56,6 +58,14 @@ app.post('/auth/signin', loginValidation, signin);
 //  USERINFO ***********************************
 
 app.get('/auth/user', checkAuth, userInfo);
+
+//
+// POSTS CRUD **********************************
+app.get('/posts', getAll);
+// app.get('/posts/:id', getOne);
+app.post('/posts', checkAuth, postCreationValidation, createPost);
+// app.delete('/posts', deletePost);
+// app.patch('/posts', updatePost);
 
 //
 // SERVER LISTENING
