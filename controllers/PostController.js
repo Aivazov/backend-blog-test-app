@@ -60,3 +60,30 @@ export const createPost = async (req, res) => {
     });
   }
 };
+
+export const deletePost = async (req, res) => {
+  // try {
+  const postId = req.params.id;
+  PostModel.findOneAndDelete({
+    _id: postId,
+  })
+    .then((doc) => {
+      if (!doc) {
+        return res.status(404).json({
+          message: 'The article was not found',
+        });
+      }
+      res.json({
+        message: 'Success! The article was deleted',
+      });
+    })
+    .catch((error) => {
+      if (error) {
+        console.error(error);
+
+        return res.status(500).json({
+          message: 'Failed to delete post',
+        });
+      }
+    });
+};
