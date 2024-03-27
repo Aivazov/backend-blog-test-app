@@ -6,6 +6,7 @@
 
 import express from 'express';
 import mongoose from 'mongoose';
+import multer from 'multer';
 import { loginValidation, registerValidation } from './validations/auth.js';
 import { postCreationValidation } from './validations/post.js';
 import checkAuth from './utils/checkAuth.js';
@@ -15,6 +16,7 @@ import {
   getOne,
   createPost,
   deletePost,
+  updatePost,
 } from './controllers/PostController.js';
 
 mongoose
@@ -26,7 +28,24 @@ mongoose
 
 const app = express();
 
+const storage = multer.diskStorage({
+  destination: (_, __, callback) => {
+    callback(null, 'uploads');
+  },
+  filename: (_, file, callback) => {
+    callback(null, file.originalname); //originalname without camelcase
+  },
+}); //creating space for uploading files inside of our project
+
+const upload = multer({ storage });
+app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
+  res.json({
+    url: `/uploads/${req.file.originalname}`,
+  });
+});
+
 app.use(express.json()); //allow to read JSON before requests
+app.use('/uploads', express.static('uploads')); //giving access to 'uploads' folder and contains
 
 app.get('/', (req, res) => {
   res.send('Hello from express.js in your browser!!');
@@ -70,7 +89,7 @@ app.get('/posts', getAll);
 app.get('/posts/:id', getOne);
 app.post('/posts', checkAuth, postCreationValidation, createPost);
 app.delete('/posts/:id', checkAuth, deletePost);
-// app.patch('/posts', updatePost);
+app.patch('/posts/:id', postCreationValidation, checkAuth, updatePost);
 
 //
 // SERVER LISTENING

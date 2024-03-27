@@ -87,3 +87,39 @@ export const deletePost = async (req, res) => {
       }
     });
 };
+
+export const updatePost = async (req, res) => {
+  // try {
+  const postId = req.params.id;
+  await PostModel.updateOne(
+    {
+      _id: postId,
+    },
+    {
+      title: req.body.title,
+      text: req.body.text,
+      author: req.body.author,
+      tags: req.body.tags,
+      imgUrl: req.body.imgUrl,
+    }
+  )
+    .then((doc) => {
+      if (!doc) {
+        return res.status(404).json({
+          message: 'The article was not found',
+        });
+      }
+      res.json({
+        message: 'Success! The article was updated',
+      });
+    })
+    .catch((error) => {
+      if (error) {
+        console.error(error);
+
+        return res.status(500).json({
+          message: 'Failed to update the post',
+        });
+      }
+    });
+};
