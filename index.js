@@ -1,15 +1,17 @@
 // const express = require('express');
 // const jwt = require('jsonwebtoken');
 // const mongoose = require('mongoose');
-// const registerValidation = require('./validations/auth');
+// const signupValidation = require('./validations/auth');
 // const { validationResult } = require('express-validator');
 
 import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
-import { loginValidation, registerValidation } from './validations/auth.js';
+import { signinValidation, signupValidation } from './validations/auth.js';
 import { postCreationValidation } from './validations/post.js';
-import checkAuth from './utils/checkAuth.js';
+
+import { checkAuth, handleValidationsErrs } from './utils/index.js';
+
 import { signup, signin, userInfo } from './controllers/UserController.js';
 import {
   getAll,
@@ -48,7 +50,7 @@ app.use(express.json()); //allow to read JSON before requests
 app.use('/uploads', express.static('uploads')); //giving access to 'uploads' folder and contains
 
 app.get('/', (req, res) => {
-  res.send('Hello from express.js in your browser!!');
+  res.send('Hello from express.js in your browser');
 });
 
 // app.post('/auth/login', (req, res) => {
@@ -73,11 +75,11 @@ app.get('/', (req, res) => {
 //
 // REGISTER**************************************
 
-app.post('/auth/signup', registerValidation, signup);
+app.post('/auth/signup', signupValidation, handleValidationsErrs, signup);
 
 // LOGIN*******************************
 
-app.post('/auth/signin', loginValidation, signin);
+app.post('/auth/signin', signinValidation, handleValidationsErrs, signin);
 
 //  USERINFO ***********************************
 
@@ -87,9 +89,22 @@ app.get('/auth/user', checkAuth, userInfo);
 // POSTS CRUD **********************************
 app.get('/posts', getAll);
 app.get('/posts/:id', getOne);
-app.post('/posts', checkAuth, postCreationValidation, createPost);
+app.post(
+  '/posts',
+  checkAuth,
+  postCreationValidation,
+  handleValidationsErrs,
+  createPost
+);
 app.delete('/posts/:id', checkAuth, deletePost);
-app.patch('/posts/:id', postCreationValidation, checkAuth, updatePost);
+app.patch(
+  '/posts/:id',
+  checkAuth,
+  postCreationValidation,
+  handleValidationsErrs,
+  checkAuth,
+  updatePost
+);
 
 //
 // SERVER LISTENING

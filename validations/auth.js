@@ -1,7 +1,7 @@
 // const { body } = require('express-validator');
 import { body } from 'express-validator';
 
-export const registerValidation = [
+export const signupValidation = [
   body('email', 'Please enter correct email').isEmail(),
   body('passwordHash', 'password has to be minimum 5 symbols').isLength({
     min: 5,
@@ -10,7 +10,7 @@ export const registerValidation = [
   body('avatarUrl', 'uncorrect URL').optional().isURL(),
 ];
 
-export const loginValidation = [
+export const signinValidation = [
   body('email', 'Please enter correct email').isEmail(),
   body('passwordHash', 'password has to be minimum 5 symbols').isLength({
     min: 5,
