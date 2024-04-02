@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import { signinValidation, signupValidation } from './validations/auth.js';
 import { postCreationValidation } from './validations/post.js';
+import cors from 'cors';
 
 import { checkAuth, handleValidationsErrs } from './utils/index.js';
 
@@ -47,6 +48,7 @@ app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
 });
 
 app.use(express.json()); //allow to read JSON before requests
+app.use(cors());
 app.use('/uploads', express.static('uploads')); //giving access to 'uploads' folder and contains
 
 app.get('/', (req, res) => {
