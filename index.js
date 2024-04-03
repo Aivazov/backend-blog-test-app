@@ -16,6 +16,7 @@ import { checkAuth, handleValidationsErrs } from './utils/index.js';
 import { signup, signin, userInfo } from './controllers/UserController.js';
 import {
   getAll,
+  getLastTags,
   getOne,
   createPost,
   deletePost,
@@ -90,6 +91,9 @@ app.get('/auth/user', checkAuth, userInfo);
 //
 // POSTS CRUD **********************************
 app.get('/posts', getAll);
+app.get('/tags', getLastTags);
+
+
 app.get('/posts/:id', getOne);
 app.post(
   '/posts',
