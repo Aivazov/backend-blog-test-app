@@ -15,8 +15,11 @@ export const getAll = async (req, res) => {
 export const getLastTags = async (req, res) => {
   try {
     const getTags = await PostModel.find().limit(5).exec();
-    const tags = getTags.map(object => object.tags).flat().slice(0,5);
-    
+    const tags = getTags
+      .map((object) => object.tags)
+      .flat()
+      .slice(0, 5);
+
     res.json(tags);
   } catch (error) {
     console.error(error);
@@ -36,6 +39,7 @@ export const getOne = async (req, res) => {
     { $inc: { viewsCount: 1 } }, //$inc is mongoDB method to increment determined field //returning updated doc after all the manipulations
     { returnDocument: 'after' }
   )
+    .populate('author')
     .then((doc) => {
       if (!doc) {
         return res.status(404).json({
