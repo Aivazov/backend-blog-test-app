@@ -31,6 +31,7 @@ mongoose
   .catch((err) => console.error('Mongoose error', err));
 
 const app = express();
+app.use(cors());
 
 const storage = multer.diskStorage({
   destination: (_, __, callback) => {
@@ -49,7 +50,6 @@ app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
 });
 
 app.use(express.json()); //allow to read JSON before requests
-app.use(cors());
 app.use('/uploads', express.static('uploads')); //giving access to 'uploads' folder and contains
 
 app.get('/', (req, res) => {
@@ -89,10 +89,9 @@ app.post('/auth/signin', signinValidation, handleValidationsErrs, signin);
 app.get('/auth/user', checkAuth, userInfo);
 
 //
-// POSTS CRUD **********************************
+// CRUD **********************************
 app.get('/posts', getAll);
 app.get('/tags', getLastTags);
-
 
 app.get('/posts/:id', getOne);
 app.post(
