@@ -117,8 +117,8 @@ export const updatePost = async (req, res) => {
       title: req.body.title,
       text: req.body.text,
       author: req.body.author,
-      tags: req.body.tags,
-      imgUrl: req.body.imgUrl,
+      tags: req.body.tags.split(','),
+      imageUrl: req.body.imageUrl,
     }
   )
     .then((doc) => {
