@@ -11,6 +11,12 @@ import { signinValidation, signupValidation } from './validations/auth.js';
 import { postCreationValidation } from './validations/post.js';
 import cors from 'cors';
 
+import dotenv from 'dotenv'
+
+dotenv.config()
+const {DB_HOST, PORT} = process.env
+
+
 import { checkAuth, handleValidationsErrs } from './utils/index.js';
 
 import { signup, signin, userInfo } from './controllers/UserController.js';
@@ -24,9 +30,7 @@ import {
 } from './controllers/PostController.js';
 
 mongoose
-  .connect(
-    'mongodb+srv://ivazowt:221477@cluster0.hap9szk.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster0'
-  )
+  .connect(DB_HOST)
   .then(() => console.log('MongoDatabase OK'))
   .catch((err) => console.error('Mongoose error', err));
 
@@ -115,7 +119,7 @@ app.patch(
 // SERVER LISTENING
 //
 
-app.listen(2999, (err) => {
+app.listen(PORT, (err) => {
   if (err) {
     return console.error(err);
   }
